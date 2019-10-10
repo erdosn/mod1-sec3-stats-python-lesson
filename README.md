@@ -1,492 +1,438 @@
 
 ### Questions
-* section 02 - macbeth most common words
-* continue, break in loops
-    * how does this work
-* nested loops - comparing numbers
-    * store and replace min/max values in a loop
+- nested loops/going through them
+- // -> what is this?
+- syntax
+- lambda functions
 
 ### Objectives
 YWBAT
-* use pythonic functions such as enumerate and zip to make life easier
-* apply nested loops to solve for stuff
-* write in line for loops
+- write functions to execute certain statistical tasks on data
+- write a try/except in a function
+    - What is the benefit of using a try/except over an if/else?
+        - catches all the exceptions that one might overlook
+        - it doesn't break your code
+        - can help you loading corrupt files
+        - find where your error is occuring
+- explain the purpose of a try/except
+- manipulate dictionaries to get certain key/value pairs from them
+- write a python script
+- explain what's happening in a python script
 
 ### Outline
 
 
 ```python
-import pandas as pd
 import numpy as np
 
-from string import ascii_lowercase
-
+from collections import Counter
 
 import matplotlib.pyplot as plt
 ```
 
+### Build functions for the following tasks
+* Mean
+* Mode
+* Standard Deviation
+
+### Jupyter Best Practices
+- `shift+tab` x 1, x2, x4 to read documentation of a method
+- let `tab` autocomplete things for you
+    - avoid typos and other nonsense
+- listen to jupyter and other ides when they talk to you
+
+
+### Why is turning off print statements a good thing? 
+- They can clutter up an output
+- Takes up computational time
+- Eats away the memory
+
 
 ```python
-x = np.random.randint(0, 20, 100)
+# How to write a function like a python developer
+# Let's add a docstring to our function
+def mean(lst, verbose=True):
+    """
+    This function will calculate the mean of a
+    list or an array
+    
+    Paramters
+    lst : list
+        a list of numbers to calculate the mean on, list cannot contain NaN values 
+    
+    Return
+    mean_list: int/float
+        the mean of lst
+    """
+    exception_counts = 0
+    sum_list = 0
+    total_elements = 0
+    
+    for index, i in enumerate(lst):
+        try:
+            sum_list += i
+            total_elements += 1
+        except:
+            if verbose:
+                print(f"this index is broken {index}")
+            exception_counts += 1
+    
+    if verbose:
+        print(f"Discovered {exception_counts} Exceptions in your list")
+    return sum_list/total_elements
+
+
+def mode(lst):
+    """
+    This function will calculate the mode of a list or an array
+    
+    Paramters
+    lst : list
+        a list of numbers to calculate the mode of
+    
+    Return
+    modes_of_list: 
+        the mean of lst
+    
+    """
+    modes_of_list = []
+    
+    counter_dict = Counter(lst)
+    counter_dict_list = [(k, v) for k, v in counter_dict.items()]
+    sorted_counter_list = sorted(counter_dict_list, key=lambda x: x[1], reverse=True)
+    max_freq = sorted_counter_list[0][1]
+    for number, freq in sorted_counter_list:
+        if freq == max_freq:
+            modes_of_list.append(number)
+        else:
+            break
+    return modes_of_list
+
+
+def standard_deviation(lst):
+    pass 
+```
+
+
+```python
+x = np.random.randint(1, 20, size=30)
 x
 ```
 
 
 
 
-    array([ 8,  4,  1,  6,  5, 19,  3,  1, 11,  6, 12, 11, 10,  3,  8,  8, 18,
-            2,  1, 14, 14, 12,  1, 16,  0, 14, 19,  3,  6, 11, 11, 18,  7,  9,
-            6, 14, 13,  6,  5, 16, 16, 11, 11, 14, 18, 10,  4, 17, 11,  3,  7,
-           14, 15, 13,  8, 10, 17,  4,  8,  5,  6,  6,  9, 15, 16, 10, 18,  7,
-           17,  8, 13, 12, 19, 15,  4,  1,  8, 15, 18, 16,  8, 11, 13,  0, 19,
-           13, 12, 16, 17,  9,  3, 17,  8, 16,  0,  1, 11,  9,  7, 13])
-
-
-
-### Build a mean function, which is nice
-
-
-```python
-def mean(lst):
-    """
-    take the sum of the elements in the list
-    divide the sum by the length of the list
-    """
-    s = sum(lst)
-    length = len(lst)
-    return 1.0*s/length
-```
-
-
-```python
-x.mean() == mean(x)
-```
-
-
-
-
-    True
-
-
-
-### Build a standard deviation function
-
-
-```python
-def standard_deviation(lst):
-    """
-    difference of each item from the mean
-    then square that
-    then take the avg of the differences list
-    then square root it
-    """
-    squares = []
-    for i in lst:
-        squares.append((i - mean(lst))**2)
-    mean_squared_diff = mean(squares)
-    std = mean_squared_diff**0.5
-    return std
-```
-
-
-```python
-round(np.std(x), 10) == round(standard_deviation(x), 10)
-```
-
-
-
-
-    True
-
-
-
-### Refactor Code
-
-
-```python
-def standard_deviation(lst):
-    """
-    difference of each item from the mean
-    then square that
-    then take the avg of the differences list
-    then square root it
-    """
-    # let's use list comprehension instead
-    mu = mean(lst)
-    square_diff = lambda i, mu: (i - mu)**2
-    squares = [square_diff(i, mu) for i in lst]
-    mean_squared_diff = mean(squares)
-    std = mean_squared_diff**0.5
-    return std
-```
-
-
-```python
-round(np.std(x), 10) == round(standard_deviation(x), 10)
-```
-
-
-
-
-    True
-
-
-
-### Make some dictionaries
-
-
-```python
-names = ["matthew", "dennis", "parker", "savannah", "levi", "rafael"]
-```
-
-
-```python
-# {'name': no_letters_in_name}
-```
-
-
-```python
-names_dict = {}
-for name in names:
-    names_dict[name] = len(name)
-    
-names_dict
-```
-
-
-
-
-    {'dennis': 6, 'levi': 4, 'matthew': 7, 'parker': 6, 'rafael': 6, 'savannah': 8}
+    array([10,  2,  3, 10,  3,  7,  6,  6, 12,  7, 16, 13,  8,  2, 11,  9,  9,
+            9, 19, 13, 16,  8,  3,  8,  7,  2,  7, 12,  4,  4])
 
 
 
 
 ```python
-name_lengths = [len(name) for name in names]
-name_lengths
+mean(x), np.mean(x)
 ```
 
+    Discovered 0 Exceptions in your list
 
 
 
-    [7, 6, 6, 8, 4, 6]
+
+
+    (8.2, 8.2)
 
 
 
 
 ```python
-for n, l, i in zip(names, name_lengths, range(100)):
-    print(n)
-    print(l)
-    print(i)
-    print("\n\n")
-```
-
-    matthew
-    7
-    0
-    
-    
-    
-    dennis
-    6
-    1
-    
-    
-    
-    parker
-    6
-    2
-    
-    
-    
-    savannah
-    8
-    3
-    
-    
-    
-    levi
-    4
-    4
-    
-    
-    
-    rafael
-    6
-    5
-    
-    
-    
-
-
-
-```python
-# build dictionary with inline comprehension
+# # What if we have a None value in our list
+# x = np.append(x, [None, 1, 3, None, 5, 'this', 'string', 'is', 'in', 'my', 'list'])
+# x
 ```
 
 
 ```python
-names_dict = {name: length for name, length in zip(names, name_lengths)}
-names_dict
+mean(x, verbose=False)
 ```
 
 
 
 
-    {'dennis': 6, 'levi': 4, 'matthew': 7, 'parker': 6, 'rafael': 6, 'savannah': 8}
+    8.2
+
+
+
+### What does Counter do?
+
+
+```python
+x
+```
+
+
+
+
+    array([10,  2,  3, 10,  3,  7,  6,  6, 12,  7, 16, 13,  8,  2, 11,  9,  9,
+            9, 19, 13, 16,  8,  3,  8,  7,  2,  7, 12,  4,  4])
 
 
 
 
 ```python
-# build using the dict function
-names_dict = dict(zip(names, name_lengths))
-names_dict
+mode(x)
 ```
 
-
-
-
-    {'dennis': 6, 'levi': 4, 'matthew': 7, 'parker': 6, 'rafael': 6, 'savannah': 8}
-
-
-
-### enumerate
-
-
-```python
-al = list(ascii_lowercase)
-print(al)
-```
-
-    ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
-
-
-```python
-letters = np.random.choice(list(ascii_lowercase), 100)
-letters
-```
+    [(7, 4), (2, 3), (3, 3), (8, 3), (9, 3), (10, 2), (6, 2), (12, 2), (16, 2), (13, 2), (4, 2), (11, 1), (19, 1)]
 
 
 
 
-    array(['g', 'v', 'x', 'a', 'i', 'f', 'g', 'f', 'o', 'f', 'j', 'u', 'f',
-           'p', 'k', 'r', 'a', 'p', 'o', 'u', 'r', 'j', 'i', 'm', 'y', 'a',
-           'w', 'y', 'n', 'u', 'w', 'z', 'y', 'i', 'n', 'c', 'b', 'd', 'g',
-           'k', 'u', 'v', 'l', 'd', 'm', 'a', 'q', 'w', 'q', 'q', 'i', 'r',
-           's', 'h', 'l', 'n', 'v', 'p', 'f', 'v', 'i', 'i', 'f', 'b', 'n',
-           'l', 'p', 'v', 'z', 'h', 'k', 'w', 'o', 'r', 't', 'o', 'z', 'k',
-           'k', 'u', 'f', 'x', 'u', 'u', 'g', 'x', 'x', 'o', 'r', 'g', 'g',
-           'x', 'd', 'k', 'x', 'z', 'o', 't', 'o', 'a'], dtype='<U1')
+
+    [7]
 
 
 
 
 ```python
-# keys {'before_m':[], 'after_m': []}
+c = Counter(x)
 ```
 
 
 ```python
-# what is the index of a in al?
-al.index('a')
+for k, v in c.items():
+    print(k, v)
 ```
 
+    16 2
+    3 2
+    12 2
+    17 1
+    4 3
+    15 2
+    10 3
+    11 4
+    13 2
+    9 2
+    5 3
+    6 2
+    8 1
+    19 1
+    18 1
+    14 1
+    None 2
+    1 1
+    this 1
+    string 1
+    is 1
+    in 1
+    my 1
+    list 1
 
 
-
-    0
-
-
+### `lambda` functions
 
 
 ```python
-before_m_list = []
-after_m_list = []
-for letter in letters:
-    index_of_letter = al.index(letter)
-    if index_of_letter < al.index('m'):
-        before_m_list.append(letter)
-    else:
-        after_m_list.append(letter)
+def summ(a, b):
+    return a + b
 
-d = {"before_m_list":before_m_list, "after_m_list": after_m_list}
-print(d)
-```
-
-    {'before_m_list': ['g', 'a', 'i', 'f', 'g', 'f', 'f', 'j', 'f', 'k', 'a', 'j', 'i', 'a', 'i', 'c', 'b', 'd', 'g', 'k', 'l', 'd', 'a', 'i', 'h', 'l', 'f', 'i', 'i', 'f', 'b', 'l', 'h', 'k', 'k', 'k', 'f', 'g', 'g', 'g', 'd', 'k', 'a'], 'after_m_list': ['v', 'x', 'o', 'u', 'p', 'r', 'p', 'o', 'u', 'r', 'm', 'y', 'w', 'y', 'n', 'u', 'w', 'z', 'y', 'n', 'u', 'v', 'm', 'q', 'w', 'q', 'q', 'r', 's', 'n', 'v', 'p', 'v', 'n', 'p', 'v', 'z', 'w', 'o', 'r', 't', 'o', 'z', 'u', 'x', 'u', 'u', 'x', 'x', 'o', 'r', 'x', 'x', 'z', 'o', 't', 'o']}
-
-
-
-```python
-d = {"before_m": [], "after_m": []}
-for letter in letters:
-    index_of_letter = al.index(letter)
-    if index_of_letter < al.index('m'):
-        d["before_m"].append(letter)
-    else:
-        d["after_m"].append(letter)
-print(d)
-```
-
-    {'before_m': ['g', 'a', 'i', 'f', 'g', 'f', 'f', 'j', 'f', 'k', 'a', 'j', 'i', 'a', 'i', 'c', 'b', 'd', 'g', 'k', 'l', 'd', 'a', 'i', 'h', 'l', 'f', 'i', 'i', 'f', 'b', 'l', 'h', 'k', 'k', 'k', 'f', 'g', 'g', 'g', 'd', 'k', 'a'], 'after_m': ['v', 'x', 'o', 'u', 'p', 'r', 'p', 'o', 'u', 'r', 'm', 'y', 'w', 'y', 'n', 'u', 'w', 'z', 'y', 'n', 'u', 'v', 'm', 'q', 'w', 'q', 'q', 'r', 's', 'n', 'v', 'p', 'v', 'n', 'p', 'v', 'z', 'w', 'o', 'r', 't', 'o', 'z', 'u', 'x', 'u', 'u', 'x', 'x', 'o', 'r', 'x', 'x', 'z', 'o', 't', 'o']}
-
-
-
-```python
-from collections import defaultdict
-```
-
-
-```python
-d = defaultdict(set)
-for letter in letters:
-    index_of_letter = al.index(letter)
-    if index_of_letter < al.index('m'):
-        d["before_m"].add(letter)
-    else:
-        d["after_m"].add(letter)
-    if letter in 'abcde':
-        d["top5"].add(letter)
-    if letter in 'xyz':
-        d["dumbletters"].add(letter)
-    if letter in "aeiou":
-        d["vowels"].add(letter)
-print(d)
-```
-
-    defaultdict(<class 'set'>, {'before_m': {'c', 'k', 'd', 'j', 'b', 'h', 'l', 'f', 'a', 'g', 'i'}, 'after_m': {'o', 'n', 'm', 'z', 't', 'x', 's', 'v', 'y', 'p', 'r', 'q', 'u', 'w'}, 'dumbletters': {'z', 'y', 'x'}, 'top5': {'c', 'b', 'a', 'd'}, 'vowels': {'o', 'i', 'a', 'u'}})
-
-
-### Macbeth stuff
-
-
-```python
-import requests
-import matplotlib.pyplot as plt
-macbeth = requests.get('http://www.gutenberg.org/cache/epub/2264/pg2264.txt').text
-
-print(type(macbeth))
-print(len(macbeth))
-print(macbeth[:500])
-```
-
-    <class 'str'>
-    119846
-    ﻿***The Project Gutenberg's Etext of Shakespeare's First Folio***
-    ********************The Tragedie of Macbeth*********************
-    
-    This is our 3rd edition of most of these plays.  See the index.
-    
-    
-    Copyright laws are changing all over the world, be sure to check
-    the copyright laws for your country before posting these files!!
-    
-    Please take a look at the important information in this header.
-    We encourage you to keep this file on your own disk, keeping an
-    electronic path open for the nex
-
-
-
-```python
-words = macbeth.split(" ")
-words[:10]
+summ(8, 13), type(summ)
 ```
 
 
 
 
-    ['\ufeff***The',
-     'Project',
-     "Gutenberg's",
-     'Etext',
-     'of',
-     "Shakespeare's",
-     'First',
-     'Folio***\r\n********************The',
-     'Tragedie',
-     'of']
+    (21, function)
 
 
 
 
 ```python
-# building a counter dictionary by hand
-d = dict()
-for word in words:
-    if word in d.keys():
-        d[word] += 1
-    else:
-        d[word] = 1
-```
+# convert summ to a lambda function
+summ = lambda a, b: a + b 
 
-
-```python
-from collections import Counter
-```
-
-
-```python
-d = Counter(words)
-```
-
-
-```python
-list_of_tuples = [(k, v) for k, v in d.items()]
-print(list_of_tuples[:10])
-```
-
-    [('\ufeff***The', 1), ('Project', 19), ("Gutenberg's", 3), ('Etext', 4), ('of', 387), ("Shakespeare's", 6), ('First', 3), ('Folio***\r\n********************The', 2), ('Tragedie', 5), ('Macbeth*********************\r\n\r\nThis', 1)]
-
-
-
-```python
-sorted_lot = sorted(list_of_tuples, key=lambda t: t[1], reverse=True)
-sorted_lot[:10]
+summ(8, 13), type(summ)
 ```
 
 
 
 
-    [('', 1327),
-     ('the', 600),
-     ('and', 408),
-     ('of', 387),
-     ('to', 358),
-     ('I', 261),
-     ('a', 244),
-     ('in', 185),
-     ('is', 182),
-     ('you', 176)]
+    (21, function)
 
 
 
 
 ```python
-top_25 = sorted_lot[1:26]
+summ(100, 200)
 ```
+
+
+
+
+    300
+
+
+
+### Let's learn about the `sorted` method
 
 
 ```python
-top_25_dict = dict(top_25)
-print(top_25_dict)
+x = np.random.randint(80, 90, size=20)
+y = np.random.randint(0, 10, size=20)
+z = np.random.randint(20, 30, size=20)
+
+new_list = [(i, j, k) for i, j, k in zip(x, y, z)]
+new_list
 ```
 
-    {'the': 600, 'and': 408, 'of': 387, 'to': 358, 'I': 261, 'a': 244, 'in': 185, 'is': 182, 'you': 176, 'my': 168, 'that': 147, 'with': 137, 'Macb.': 137, 'not': 136, 'be': 128, 'his': 127, 'your': 120, 'it': 119, 'our': 115, 'haue': 105, 'this': 98, 'for': 96, 'he': 72, 'me': 68, 'will': 65}
+
+
+
+    [(82, 4, 29),
+     (80, 7, 23),
+     (86, 6, 22),
+     (83, 9, 23),
+     (82, 6, 21),
+     (80, 1, 24),
+     (88, 2, 27),
+     (82, 7, 23),
+     (87, 1, 24),
+     (87, 6, 23),
+     (82, 8, 29),
+     (85, 9, 22),
+     (85, 1, 28),
+     (80, 2, 24),
+     (81, 4, 29),
+     (85, 2, 29),
+     (85, 3, 29),
+     (82, 2, 29),
+     (84, 5, 22),
+     (89, 2, 25)]
+
 
 
 
 ```python
-plt.figure(figsize=(10, 10))
-plt.bar(range(len(top_25)), top_25_dict.values())
-plt.xticks(range(len(top_25)), top_25_dict.keys(), rotation=90)
-plt.show()
+# let's sort our list of tuples by the zeroth element
+sorted(new_list) # by default this will happen
 ```
 
 
-![png](lesson-plan_files/lesson-plan_42_0.png)
+
+
+    [(80, 1, 24),
+     (80, 2, 24),
+     (80, 7, 23),
+     (81, 4, 29),
+     (82, 2, 29),
+     (82, 4, 29),
+     (82, 6, 21),
+     (82, 7, 23),
+     (82, 8, 29),
+     (83, 9, 23),
+     (84, 5, 22),
+     (85, 1, 28),
+     (85, 2, 29),
+     (85, 3, 29),
+     (85, 9, 22),
+     (86, 6, 22),
+     (87, 1, 24),
+     (87, 6, 23),
+     (88, 2, 27),
+     (89, 2, 25)]
+
+
+
+
+```python
+# let's sort our list of tuples by the 1st indexed element
+sorting_function = lambda tup: tup[1]
+def sorting_function_2(tup):
+    return tup[1]
+
+
+sorted(new_list, key=sorting_function_2)
+```
+
+
+
+
+    [(80, 1, 24),
+     (87, 1, 24),
+     (85, 1, 28),
+     (88, 2, 27),
+     (80, 2, 24),
+     (85, 2, 29),
+     (82, 2, 29),
+     (89, 2, 25),
+     (85, 3, 29),
+     (82, 4, 29),
+     (81, 4, 29),
+     (84, 5, 22),
+     (86, 6, 22),
+     (82, 6, 21),
+     (87, 6, 23),
+     (80, 7, 23),
+     (82, 7, 23),
+     (82, 8, 29),
+     (83, 9, 23),
+     (85, 9, 22)]
+
+
+
+
+```python
+# sort by the 2nd indexed element
+sorted(new_list, key=lambda x: x[2])
+```
+
+
+
+
+    [(82, 6, 21),
+     (86, 6, 22),
+     (85, 9, 22),
+     (84, 5, 22),
+     (80, 7, 23),
+     (83, 9, 23),
+     (82, 7, 23),
+     (87, 6, 23),
+     (80, 1, 24),
+     (87, 1, 24),
+     (80, 2, 24),
+     (89, 2, 25),
+     (88, 2, 27),
+     (85, 1, 28),
+     (82, 4, 29),
+     (82, 8, 29),
+     (81, 4, 29),
+     (85, 2, 29),
+     (85, 3, 29),
+     (82, 2, 29)]
+
+
+
+
+```python
+7/2, 7//2, 10/6, 10//6
+```
+
+
+
+
+    (3.5, 3, 1.6666666666666667, 1)
+
+
+
+
+```python
+x[6//2]
+```
+
+
+
+
+    10
+
 
 
 ### Assessment
